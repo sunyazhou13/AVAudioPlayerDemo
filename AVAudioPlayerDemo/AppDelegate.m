@@ -18,8 +18,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    
-    
     AVAudioSession *session = [AVAudioSession sharedInstance];
     NSError *error;
     if (![session setCategory:AVAudioSessionCategoryPlayback error:&error]) {
@@ -32,7 +30,6 @@
     
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
-    
     return YES;
 }
 

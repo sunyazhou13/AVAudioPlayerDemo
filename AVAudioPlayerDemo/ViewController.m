@@ -269,7 +269,6 @@
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
                                          withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
         [[AVAudioSession sharedInstance] setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
-        
         if (options == AVAudioSessionInterruptionOptionShouldResume) {
             [self play];
         } else {
