@@ -42,6 +42,7 @@
         if (self.musicPlayer == nil) {
             self.musicPlayer = [self createPlayForFile:@"384551_1438267683" withExtension:@"mp3"];
         }
+        [self setupNotifications];
     }
     return self;
 }
@@ -51,11 +52,26 @@
     if (self.musicPlayer == nil) {
         self.musicPlayer = [self createPlayForFile:@"384551_1438267683" withExtension:@"mp3"];
     }
+    [self setupNotifications];
+    
 }
 
 - (void)dealloc {
     if (self.musicPlayer) { self.musicPlayer = nil; }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+/**
+ 播放的通知处理
+ */
+- (void)setupNotifications {
+    NSNotificationCenter *nsnc = [NSNotificationCenter defaultCenter];
+    [nsnc addObserver:self
+             selector:@selector(handleInterruption:)
+                 name:AVAudioSessionInterruptionNotification
+               object:[AVAudioSession sharedInstance]];
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -72,6 +88,12 @@
     self.volumnKnob.maximumValue = 1.0f;
     self.volumnKnob.value = 1.0;
     self.volumnKnob.defaultValue = 1.0;
+    
+    // 倍速 1.0 is normal, 0.5 is half speed, 2.0 is double speed.
+    self.rateKnob.minimumValue = 0.5f;
+    self.rateKnob.maximumValue = 2.0f;
+    self.rateKnob.value = 1.0f;
+    self.rateKnob.defaultValue = 1.0f;
     
 }
 
@@ -161,6 +183,7 @@
 }
 
 
+
 #pragma mark - 
 #pragma mark - 触发事件
 - (IBAction)playAction:(THPlayButton *)sender {
@@ -185,6 +208,33 @@
 }
 
 
+/**
+ 音频意外打断处理
+
+ @param notification 通知信息
+ */
+- (void)handleInterruption:(NSNotification *)notification {
+    NSDictionary *info = notification.userInfo;
+    AVAudioSessionInterruptionType type = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        //Handle AVAudioSessionInterruptionTypeBegan
+        [self pause];
+    } else {
+        //Handle AVAudioSessionInterruptionTypeEnded
+        AVAudioSessionInterruptionOptions options = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+        NSError *error = nil;
+        [[AVAudioSession sharedInstance] setActive:YES error:&error];
+        if (options == AVAudioSessionInterruptionOptionShouldResume) {
+            [self play];
+        } else {
+            [self play];
+        }
+        
+        if (error) {
+            NSLog(@"AVAudioSessionInterruptionOptionShouldResume失败:%@",[error localizedDescription]);
+        }
+    }
+}
 
 #pragma mark -
 #pragma mark - 无关代码
