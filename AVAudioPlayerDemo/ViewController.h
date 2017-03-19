@@ -10,6 +10,8 @@
 
 @interface ViewController : UIViewController
 
-
+- (void)play;
+- (void)stop;
+- (void)pause;
 @end
 

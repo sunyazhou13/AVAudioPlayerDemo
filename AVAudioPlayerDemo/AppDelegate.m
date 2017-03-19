@@ -18,6 +18,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    
+    
     AVAudioSession *session = [AVAudioSession sharedInstance];
     NSError *error;
     if (![session setCategory:AVAudioSessionCategoryPlayback error:&error]) {
@@ -27,6 +29,9 @@
     if (![session setActive:YES error:&error]) {
         NSLog(@"Activation Error: %@", [error localizedDescription]);
     }
+    
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
     
     return YES;
 }
@@ -58,5 +63,30 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)event {
+    if (event.type == UIEventTypeRemoteControl) {
+        switch (event.subtype) {
+            case UIEventSubtypeRemoteControlPlay:
+                NSLog(@"暂停播放");
+                break;
+            case UIEventSubtypeRemoteControlPause:
+                
+                NSLog(@"继续播放");
+                break;
+            case UIEventSubtypeRemoteControlNextTrack:
+                NSLog(@"下一曲");
+                break;
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                NSLog(@"上一曲");
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 @end

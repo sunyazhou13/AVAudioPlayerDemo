@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		336C142E22392EB2421A4748 /* libPods-AVAudioPlayerDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA3A6E52256DA463EAEBD7F5 /* libPods-AVAudioPlayerDemo.a */; };
+		3F57CCCF1E7EB0D000047E42 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F57CCCE1E7EB0D000047E42 /* MediaPlayer.framework */; };
 		8FBE320B1E7A3402002459B2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FBE320A1E7A3402002459B2 /* main.m */; };
 		8FBE320E1E7A3402002459B2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FBE320D1E7A3402002459B2 /* AppDelegate.m */; };
 		8FBE32111E7A3402002459B2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FBE32101E7A3402002459B2 /* ViewController.m */; };
@@ -23,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		278AFE25443F6B2AD1823AB2 /* Pods-AVAudioPlayerDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AVAudioPlayerDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-AVAudioPlayerDemo/Pods-AVAudioPlayerDemo.release.xcconfig"; sourceTree = "<group>"; };
+		3F57CCCE1E7EB0D000047E42 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		8FBE32061E7A3402002459B2 /* AVAudioPlayerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVAudioPlayerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FBE320A1E7A3402002459B2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8FBE320C1E7A3402002459B2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F57CCCF1E7EB0D000047E42 /* MediaPlayer.framework in Frameworks */,
 				336C142E22392EB2421A4748 /* libPods-AVAudioPlayerDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +65,7 @@
 		6E0FE622243D5B4D80A7F231 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3F57CCCE1E7EB0D000047E42 /* MediaPlayer.framework */,
 				DA3A6E52256DA463EAEBD7F5 /* libPods-AVAudioPlayerDemo.a */,
 			);
 			name = Frameworks;

@@ -13,6 +13,7 @@
 #import "THPlayButton.h"
 #import <AVFoundation/AVFoundation.h>
 
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface ViewController ()
 
@@ -66,9 +67,17 @@
  */
 - (void)setupNotifications {
     NSNotificationCenter *nsnc = [NSNotificationCenter defaultCenter];
+    
+    //添加意外中断音频播放的通知
     [nsnc addObserver:self
              selector:@selector(handleInterruption:)
                  name:AVAudioSessionInterruptionNotification
+               object:[AVAudioSession sharedInstance]];
+    
+    //添加线路变化通知
+    [nsnc addObserver:self
+             selector:@selector(hanldeRouteChange:)
+                 name:AVAudioSessionRouteChangeNotification
                object:[AVAudioSession sharedInstance]];
 }
 
@@ -129,7 +138,9 @@
         [self.musicPlayer playAtTime:delayTime];
         self.playing = YES;
     }
+    
     self.trackDescrption.text = [self.musicPlayer.url absoluteString];
+    [self configNowPlayingInfoCenter]; //配置后台播放的页面信息
 }
 - (void)stop {
     if (self.musicPlayer == nil) { return; }
@@ -145,6 +156,37 @@
     if (self.playing) {
         [self.musicPlayer pause];
         self.playing = NO;
+    }
+}
+
+
+//设置锁屏状态，显示的歌曲信息
+-(void)configNowPlayingInfoCenter{
+    if (NSClassFromString(@"MPNowPlayingInfoCenter")) {
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        
+        //歌曲名称
+        [dict setObject:@"歌曲名称" forKey:MPMediaItemPropertyTitle];
+        
+        //演唱者
+        [dict setObject:@"演唱者" forKey:MPMediaItemPropertyArtist];
+        
+        //专辑名
+        [dict setObject:@"专辑名" forKey:MPMediaItemPropertyAlbumTitle];
+        
+        //专辑缩略图
+        UIImage *image = [UIImage imageNamed:@"sunyazhou"];
+        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:image];
+        [dict setObject:artwork forKey:MPMediaItemPropertyArtwork];
+        
+        //音乐剩余时长
+        [dict setObject:@20 forKey:MPMediaItemPropertyPlaybackDuration];
+        
+        //音乐当前播放时间 在计时器中修改
+        [dict setObject:[NSNumber numberWithDouble:100.0] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+        
+        //设置锁屏状态下屏幕显示播放音乐信息
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
     }
 }
 
@@ -223,17 +265,41 @@
         //Handle AVAudioSessionInterruptionTypeEnded
         AVAudioSessionInterruptionOptions options = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
         NSError *error = nil;
-        [[AVAudioSession sharedInstance] setActive:YES error:&error];
+        //激活音频会话 允许外接音响
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                         withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
+        [[AVAudioSession sharedInstance] setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
+        
         if (options == AVAudioSessionInterruptionOptionShouldResume) {
             [self play];
         } else {
             [self play];
         }
         
+        
+        self.playButton.selected = YES;
+        
         if (error) {
             NSLog(@"AVAudioSessionInterruptionOptionShouldResume失败:%@",[error localizedDescription]);
         }
     }
+}
+
+- (void)hanldeRouteChange:(NSNotification *)notification {
+    NSDictionary *info = notification.userInfo;
+    AVAudioSessionRouteChangeReason reason = [info[AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
+    //老设备不可用
+    if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+        AVAudioSessionRouteDescription *previousRoute = info[AVAudioSessionRouteChangePreviousRouteKey];
+        AVAudioSessionPortDescription *previousOutput = previousRoute.outputs[0];
+        NSString *portType = previousOutput.portType;
+        if ([portType isEqualToString:AVAudioSessionPortHeadphones]) {
+            [self stop];
+            self.playButton.selected = NO;
+        }
+        
+    }
+    
 }
 
 #pragma mark -
